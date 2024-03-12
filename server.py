@@ -1,5 +1,7 @@
 from flask import Flask, request #from flask app import and use the Flask section. And from flask import (library) request
 import json
+from config import db
+
 
 app = Flask(__name__) #__name__ this is using the name of the folder
 
@@ -41,13 +43,21 @@ products = []
 def get_products():
     return json.dumps(products)
 
+def fix_id(obj):
+    obj["_id"]=str(obj["_id"])
+    return obj
+
 @app.post("/sampleAPI/products") #This will write.
 def save_products(): # This will save a new product
     product = request.get_json() # Here we are writing/pushing to the server
+
     print (product)
     #mock the save
-    products.append(product)
-    return json.dumps(product)
+
+    # products.append(product) THIS WAS USED TO PUSH LINE 41 TO OUR LOCAL SERVER
+    db.products.insert_one(product) #THIS WILL PUSH USING LINE 41 TO A DATA BASE
+
+    return json.dumps(fix_id(product))
 
 
 
